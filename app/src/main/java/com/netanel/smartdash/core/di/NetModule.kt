@@ -1,6 +1,11 @@
-package com.netanel.smartdash.domain
+package com.netanel.smartdash.core.di
 
 import android.content.Context
+import com.netanel.smartdash.core.network.DynamicApi
+import com.netanel.smartdash.core.network.DynamicClient
+import com.netanel.smartdash.core.network.JsonProvider
+import com.netanel.smartdash.core.network.newOkHttp
+import com.netanel.smartdash.core.network.newRetrofit
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

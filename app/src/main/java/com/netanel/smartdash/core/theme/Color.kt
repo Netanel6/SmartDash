@@ -1,4 +1,4 @@
-package com.netanel.smartdash.ui.theme
+package com.netanel.smartdash.core.theme
 
 import androidx.compose.ui.graphics.Color
 

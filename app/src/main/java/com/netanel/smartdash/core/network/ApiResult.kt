@@ -1,4 +1,4 @@
-package com.netanel.smartdash.domain
+package com.netanel.smartdash.core.network
 
 sealed class ApiResult<out T> {
   data class Success<T>(val value: T, val code: Int) : ApiResult<T>()

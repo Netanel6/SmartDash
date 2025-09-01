@@ -1,4 +1,4 @@
-package com.netanel.smartdash.domain
+package com.netanel.smartdash.core.network
 
 import kotlinx.serialization.json.Json
 
