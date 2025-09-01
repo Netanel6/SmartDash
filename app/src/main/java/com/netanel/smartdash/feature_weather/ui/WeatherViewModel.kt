@@ -51,13 +51,15 @@ class WeatherViewModel @Inject constructor(
     fun startLocationTracking() {
         _state.value = UiState.Loading
         viewModelScope.launch {
-            locationProvider.locationUpdates().collect { loc ->
-                when (val res = getWeather(loc.latitude, loc.longitude)) {
-                    is ApiResult.Success -> _state.value = UiState.Success(res.value)
-                    is ApiResult.HttpError -> _state.value = UiState.Error("HTTP ${res.code}")
-                    is ApiResult.NetworkError -> _state.value = UiState.Error("Network error")
-                    is ApiResult.SerializationError -> _state.value = UiState.Error("Parse error")
-                    is ApiResult.UnknownError -> _state.value = UiState.Error("Unknown error")
+            locationProvider.pollLocation().collect { loc ->
+                loc?.let {
+                    when (val res = getWeather(loc.latitude, loc.longitude)) {
+                        is ApiResult.Success -> _state.value = UiState.Success(res.value)
+                        is ApiResult.HttpError -> _state.value = UiState.Error("HTTP ${res.code}")
+                        is ApiResult.NetworkError -> _state.value = UiState.Error("Network error")
+                        is ApiResult.SerializationError -> _state.value = UiState.Error("Parse error")
+                        is ApiResult.UnknownError -> _state.value = UiState.Error("Unknown error")
+                    }
                 }
             }
         }
