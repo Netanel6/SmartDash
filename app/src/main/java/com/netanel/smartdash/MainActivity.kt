@@ -3,16 +3,19 @@ package com.netanel.smartdash
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.netanel.smartdash.ui.theme.SmartDashTheme
+import com.netanel.smartdash.weather.WeatherViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+/*
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +31,32 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}*/
+
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val vm: WeatherViewModel = hiltViewModel()
+            val state by vm.state.collectAsState()
+
+            LaunchedEffect(Unit) {
+                vm.load(32.0800964, 34.8243129) // Tel Aviv coords
+            }
+
+            when (val s = state) {
+                is WeatherViewModel.UiState.Idle -> Text("Idle…")
+                is WeatherViewModel.UiState.Loading -> Text("Loading…")
+                is WeatherViewModel.UiState.Success -> Text(
+                    "🌤 ${s.data.city}: ${s.data.temperatureC}°C, ${s.data.description}"
+                )
+                is WeatherViewModel.UiState.Error -> Text("❌ ${s.message}")
+            }
+        }
+    }
 }
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
