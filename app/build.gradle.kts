@@ -90,4 +90,7 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.retrofit.kotlinx.serialization.converter)
 
+    // Play Services
+    implementation(libs.play.services.location)
+
 }
