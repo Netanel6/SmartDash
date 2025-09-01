@@ -1,4 +1,4 @@
-package com.netanel.smartdash
+package com.netanel.smartdash.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

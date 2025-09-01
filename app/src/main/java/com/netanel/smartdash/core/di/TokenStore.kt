@@ -1,4 +1,4 @@
-package com.netanel.smartdash.domain
+package com.netanel.smartdash.core.di
 
 import okhttp3.Interceptor
 import okhttp3.Response

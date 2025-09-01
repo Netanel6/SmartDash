@@ -1,13 +1,14 @@
-package com.netanel.smartdash.domain
+package com.netanel.smartdash.core.network
+import com.netanel.smartdash.core.di.HeadersInterceptor
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
 fun newOkHttp(
-  headers: HeadersInterceptor,
-  enableLogging: Boolean,
-  cache: Cache? = null
+    headers: HeadersInterceptor,
+    enableLogging: Boolean,
+    cache: Cache? = null
 ): OkHttpClient {
   val logging = HttpLoggingInterceptor().apply {
     level = if (enableLogging) HttpLoggingInterceptor.Level.BODY

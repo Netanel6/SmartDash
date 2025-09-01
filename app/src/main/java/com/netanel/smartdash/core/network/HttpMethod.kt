@@ -1,4 +1,4 @@
-package com.netanel.smartdash.domain // עדכן לפי החבילה שלך
+package com.netanel.smartdash.core.network // עדכן לפי החבילה שלך
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
