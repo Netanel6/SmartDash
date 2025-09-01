@@ -17,21 +17,26 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     private lateinit var pm: PermissionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pm = PermissionManager.from(this) // ✅ registers the launcher here
+        pm = PermissionManager.from(this)
 
         setContent {
             val vm: WeatherViewModel = hiltViewModel()
+
             val state by vm.state.collectAsState()
 
             LaunchedEffect(Unit) {
-                when (val res = pm.request(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    PermissionResult.Granted -> vm.load(32.0800964, 34.8243129) // later replace with real coords
-                    is PermissionResult.Denied -> vm.load(32.0800964, 34.8243129)
-                    PermissionResult.DeniedPermanently -> vm.load(32.0800964, 34.8243129)
+                when (pm.request(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    PermissionResult.Granted -> vm.startLocationTracking()
+                    is PermissionResult.Denied,
+                    PermissionResult.DeniedPermanently -> vm.load(
+                        32.0800964,
+                        34.8243129
+                    ) // fallback
                 }
             }
 
@@ -41,9 +46,11 @@ class MainActivity : ComponentActivity() {
                     is WeatherViewModel.UiState.Loading -> Text("Loading…")
                     is WeatherViewModel.UiState.Success ->
                         Text("🌤 ${s.data.city}: ${s.data.temperatureC}°C, ${s.data.description}")
+
                     is WeatherViewModel.UiState.Error -> Text("❌ ${s.message}")
                 }
             }
         }
     }
 }
+
