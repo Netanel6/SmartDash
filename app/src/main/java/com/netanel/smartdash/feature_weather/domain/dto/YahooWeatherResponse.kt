@@ -1,6 +1,6 @@
 package com.netanel.smartdash.feature_weather.domain.dto
-
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class YahooWeatherResponse(
     val location: YahooLocation? = null,
@@ -29,7 +29,7 @@ data class YahooCurrentObservation(
 )
 
 @Serializable data class YahooWind(val chill: Int? = null, val direction: String? = null, val speed: Int? = null)
-@Serializable data class YahooAtmosphere(val humidity: Int? = null, val visibility: Int? = null, val pressure: Double? = null)
+@Serializable data class YahooAtmosphere(val humidity: Int? = null, val visibility: Double? = null, val pressure: Double? = null)
 @Serializable data class YahooAstronomy(val sunrise: String? = null, val sunset: String? = null)
 @Serializable data class YahooCondition(val temperature: Int? = null, val text: String? = null, val code: Int? = null)
 
