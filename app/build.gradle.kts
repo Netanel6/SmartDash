@@ -30,16 +30,18 @@ android {
                 "proguard-rules.pro"
             )
 
-            buildConfigField("String", "RAPID_API_KEY", "\"abe00e8bbamsha86872871166c98p19185fjsna884ebf6676c\"")
-            buildConfigField("String", "RAPID_API_HOST", "\"yahoo-weather5.p.rapidapi.com\"")
+            //Open Weather
+            buildConfigField("String", "OPEN_WEATHER_KEY", "\"f112b76495msh36cc233892ca79ap181290jsnca18fa7b6123\"")
+            buildConfigField("String", "OPEN_WEATHER_HOST", "\"open-weather13.p.rapidapi.com\"")
         }
 
         debug {
             isMinifyEnabled = false
             isDebuggable = true
 
-            buildConfigField("String", "RAPID_API_KEY", "\"abe00e8bbamsha86872871166c98p19185fjsna884ebf6676c\"")
-            buildConfigField("String", "RAPID_API_HOST", "\"yahoo-weather5.p.rapidapi.com\"")
+            //Open Weather
+            buildConfigField("String", "OPEN_WEATHER_KEY", "\"f112b76495msh36cc233892ca79ap181290jsnca18fa7b6123\"")
+            buildConfigField("String", "OPEN_WEATHER_HOST", "\"open-weather13.p.rapidapi.com\"")
         }
     }
     compileOptions {
