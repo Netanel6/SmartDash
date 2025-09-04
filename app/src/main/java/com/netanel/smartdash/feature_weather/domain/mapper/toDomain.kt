@@ -1,12 +1,13 @@
 package com.netanel.smartdash.feature_weather.domain.mapper
 
-import com.netanel.smartdash.feature_weather.domain.dto.YahooWeatherResponse
+import com.netanel.smartdash.feature_weather.domain.dto.OpenWeatherResponse
 import com.netanel.smartdash.feature_weather.domain.model.WeatherNow
 
 
-fun YahooWeatherResponse.toDomain(): WeatherNow =
+fun OpenWeatherResponse.toDomain(): WeatherNow =
     WeatherNow(
-        city = location?.city.orEmpty(),
-        temperatureC = current_observation?.condition?.temperature,
-        description = current_observation?.condition?.text
+        city = name.orEmpty(),
+        // API returns Kelvin by default — convert to °C
+        temperatureC = main?.temp?.let { (it - 273.15).toInt() },
+        description = weather.firstOrNull()?.description.orEmpty()
     )
