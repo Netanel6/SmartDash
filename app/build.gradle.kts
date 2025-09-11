@@ -59,6 +59,14 @@ android {
 
 dependencies {
 
+    testImplementation(libs.junit)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -69,35 +77,18 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.locationdelegation)
     implementation(libs.androidx.benchmark.common)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
-    // Hilt Dependency Injection
+    implementation(libs.navigation.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
-
-    // Hilt Navigation for Compose
     implementation(libs.hilt.navigation.compose)
-
-    // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
-
-    // Retrofit + OKHttp for Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.retrofit.kotlinx.serialization.converter)
-
-    // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-
-    // Play Services
     implementation(libs.play.services.location)
+
 
 }
