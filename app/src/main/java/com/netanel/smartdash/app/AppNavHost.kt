@@ -5,7 +5,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.netanel.smartdash.feature_weather.ui.SmartDashScreen
 import com.netanel.smartdash.feature_weather.ui.WeatherViewModel
 
 @Composable
@@ -16,8 +15,7 @@ fun AppNavHost(
 
         composable(route = NavRoutes.Home.route) {
             // Home dashboard holding weather (for now)
-            val vm: WeatherViewModel = hiltViewModel()
-            SmartDashScreen(vm = vm /*, onWeatherClick = { navController.navigate(NavRoutes.WeatherDetails.route) } */)
+            SmartDashScreen()
         }
 
         // composable(NavRoutes.WeatherDetails.route) { WeatherDetailsScreen(...) }

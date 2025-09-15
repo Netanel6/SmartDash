@@ -1,25 +1,32 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
-package com.netanel.smartdash.feature_weather.ui
+package com.netanel.smartdash.app
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallTopAppBar
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.netanel.smartdash.app.ui.ErrorCard
+import com.netanel.smartdash.app.ui.LoadingCard
 import com.netanel.smartdash.feature_weather.domain.model.WeatherNow
+import com.netanel.smartdash.feature_weather.ui.WeatherCard
+import com.netanel.smartdash.feature_weather.ui.WeatherViewModel
 
 /* ---------- Dashboard cell models ---------- */
 sealed interface DashCell { val key: String }
@@ -29,10 +36,11 @@ data class WeatherCell(
     val data: WeatherNow,
     val onClick: () -> Unit
 ) : DashCell {
-    override val key: String = "cell_weather" // stable key; keep unique per type/instance
+    override val key: String = "cell_weather"
 }
 
 /* ---------- Screen ---------- */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmartDashScreen(
     vm: WeatherViewModel = hiltViewModel()
@@ -84,7 +92,8 @@ fun SmartDashScreen(
                 }
                 is WeatherViewModel.UiState.Error -> {
                     val msg = (state as WeatherViewModel.UiState.Error).message
-                    item("error") { ErrorCard(message = msg, onRetry = { vm.refresh() }) }
+                    item("error") {
+                        ErrorCard(message = msg, onRetry = { vm.refresh() }) }
                 }
                 else -> Unit
             }
@@ -110,70 +119,6 @@ fun SmartDashScreen(
                     OutlinedButton(onClick = { vm.refresh() }) { Text("Refresh") }
                 }
             }
-        }
-    }
-}
-
-/* ---------- Cards ---------- */
-
-@Composable
-private fun LoadingCard() {
-    Card(shape = MaterialTheme.shapes.medium) {
-        // simple centered loader; you can replace with shimmer later
-        androidx.compose.foundation.layout.Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)
-        ) {
-            CircularProgressIndicator()
-        }
-    }
-}
-
-@Composable
-private fun ErrorCard(message: String, onRetry: () -> Unit) {
-    Card(shape = MaterialTheme.shapes.medium) {
-        androidx.compose.foundation.layout.Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text("Oops: $message", style = MaterialTheme.typography.bodyMedium)
-            OutlinedButton(onClick = onRetry) { Text("Try again") }
-        }
-    }
-}
-
-@Composable
-fun WeatherCard(
-    modifier: Modifier = Modifier,
-    data: WeatherNow,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        onClick = onClick // ✅ use Card's onClick instead of Modifier.clickable
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = data.city,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = "${data.temperatureC ?: "-"}°C",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = data.description.orEmpty(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }
