@@ -24,9 +24,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.netanel.smartdash.app.ui.ErrorCard
 import com.netanel.smartdash.app.ui.LoadingCard
+import com.netanel.smartdash.feature_coins.domain.model.TopCoin
+import com.netanel.smartdash.feature_coins.ui.TopCoinsCard
+import com.netanel.smartdash.feature_coins.ui.TopCoinsViewModel
 import com.netanel.smartdash.feature_weather.domain.model.WeatherNow
 import com.netanel.smartdash.feature_weather.ui.WeatherCard
 import com.netanel.smartdash.feature_weather.ui.WeatherViewModel
+import kotlin.collections.buildList
 
 /* ---------- Dashboard cell models ---------- */
 sealed interface DashCell { val key: String }
@@ -39,42 +43,67 @@ data class WeatherCell(
     override val key: String = "cell_weather"
 }
 
+/** Top crypto coins cell */
+data class TopCoinsCell(
+    val coins: List<TopCoin>,
+    val onClick: () -> Unit
+) : DashCell {
+    override val key: String = "cell_top_coins"
+}
+
 /* ---------- Screen ---------- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmartDashScreen(
-    vm: WeatherViewModel = hiltViewModel()
+    weatherVm: WeatherViewModel = hiltViewModel(),
+    coinsVm: TopCoinsViewModel = hiltViewModel()
 ) {
-    val state by vm.state.collectAsStateWithLifecycle()
+    val weatherState by weatherVm.state.collectAsStateWithLifecycle()
+    val coinsState by coinsVm.state.collectAsStateWithLifecycle()
 
     // Compose-native permission
     val locationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        if (granted) vm.startLocationTracking()
-        else vm.load(32.0800964, 34.8243129) // fallback TLV
+        if (granted) weatherVm.startLocationTracking()
+        else weatherVm.load(32.0800964, 34.8243129) // fallback TLV
     }
     LaunchedEffect(Unit) { locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION) }
 
     // Stop location updates when leaving this screen
-    DisposableEffect(Unit) { onDispose { vm.stopLocationTracking() } }
+    DisposableEffect(Unit) { onDispose { weatherVm.stopLocationTracking() } }
 
     Scaffold(
         topBar = { SmallTopAppBar(title = { Text("SmartDash") }) }
     ) { p ->
-        // Build cells for the list (for now, only weather)
-        val cells: List<DashCell> = when (val s = state) {
-            is WeatherViewModel.UiState.Success -> listOf(
-                WeatherCell(
-                    data = s.data,
-                    onClick = { /* TODO: navigate to weather details when added */ }
+        val cells: List<DashCell> = buildList {
+            if (weatherState is WeatherViewModel.UiState.Success) {
+                val data = (weatherState as WeatherViewModel.UiState.Success).data
+                add(
+                    WeatherCell(
+                        data = data,
+                        onClick = { /* TODO: navigate to weather details when added */ }
+                    )
                 )
-            )
-            is WeatherViewModel.UiState.Error -> listOf(
-                // you could add a dedicated ErrorCell later; for now render as a single item via when()
-            )
-            else -> emptyList()
+            }
+
+            if (coinsState is TopCoinsViewModel.UiState.Success) {
+                val coins = (coinsState as TopCoinsViewModel.UiState.Success).coins
+                add(
+                    TopCoinsCell(
+                        coins = coins,
+                        onClick = { coinsVm.refresh() }
+                    )
+                )
+            }
         }
+
+        val showInitialLoading = cells.isEmpty() && (
+            weatherState is WeatherViewModel.UiState.Idle ||
+                weatherState is WeatherViewModel.UiState.Loading ||
+                coinsState is TopCoinsViewModel.UiState.Idle ||
+                coinsState is TopCoinsViewModel.UiState.Loading
+            )
 
         // LazyColumn that can host any cell type
         LazyColumn(
@@ -85,17 +114,22 @@ fun SmartDashScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Loading/Idle placeholders
-            when (state) {
-                is WeatherViewModel.UiState.Idle,
-                is WeatherViewModel.UiState.Loading -> {
-                    item("loading") { LoadingCard() }
+            if (showInitialLoading) {
+                item("loading_initial") { LoadingCard() }
+            }
+
+            if (weatherState is WeatherViewModel.UiState.Error) {
+                val msg = (weatherState as WeatherViewModel.UiState.Error).message
+                item("error_weather") {
+                    ErrorCard(message = msg, onRetry = { weatherVm.refresh() })
                 }
-                is WeatherViewModel.UiState.Error -> {
-                    val msg = (state as WeatherViewModel.UiState.Error).message
-                    item("error") {
-                        ErrorCard(message = msg, onRetry = { vm.refresh() }) }
+            }
+
+            if (coinsState is TopCoinsViewModel.UiState.Error) {
+                val msg = (coinsState as TopCoinsViewModel.UiState.Error).message
+                item("error_coins") {
+                    ErrorCard(message = msg, onRetry = { coinsVm.refresh() })
                 }
-                else -> Unit
             }
 
             // Real cells
@@ -109,14 +143,25 @@ fun SmartDashScreen(
                         data = cell.data,
                         onClick = cell.onClick
                     )
+                    is TopCoinsCell -> TopCoinsCard(
+                        modifier = Modifier,
+                        coins = cell.coins,
+                        onClick = cell.onClick
+                    )
                     // Add more cell renderers here (e.g., NewsCell, TasksCell, BalanceCell, etc.)
                 }
             }
 
             // Example footer actions
-            if (state is WeatherViewModel.UiState.Success) {
-                item("actions_refresh") {
-                    OutlinedButton(onClick = { vm.refresh() }) { Text("Refresh") }
+            if (weatherState is WeatherViewModel.UiState.Success) {
+                item("actions_refresh_weather") {
+                    OutlinedButton(onClick = { weatherVm.refresh() }) { Text("Refresh weather") }
+                }
+            }
+
+            if (coinsState is TopCoinsViewModel.UiState.Success) {
+                item("actions_refresh_coins") {
+                    OutlinedButton(onClick = { coinsVm.refresh() }) { Text("Refresh coins") }
                 }
             }
         }
