@@ -2,6 +2,7 @@ package com.netanel.smartdash.feature_coins.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.netanel.smartdash.core.cache.CachePolicy
 import com.netanel.smartdash.core.network.ApiResult
 import com.netanel.smartdash.feature_coins.domain.model.TopCoin
 import com.netanel.smartdash.feature_coins.domain.usecase.GetTopCoins
@@ -30,10 +31,10 @@ class TopCoinsViewModel @Inject constructor(
         refresh()
     }
 
-    fun refresh(limit: Int = 5) {
+    fun refresh(limit: Int = 5, policy: CachePolicy = CachePolicy.CACHE_THEN_NETWORK) {
         _state.value = UiState.Loading
         viewModelScope.launch {
-            _state.value = when (val res = getTopCoins(limit = limit)) {
+            _state.value = when (val res = getTopCoins(limit = limit, policy = policy)) {
                 is ApiResult.Success -> UiState.Success(res.value)
                 is ApiResult.HttpError -> UiState.Error("HTTP ${res.code}")
                 is ApiResult.NetworkError -> UiState.Error("Network error")

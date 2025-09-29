@@ -89,6 +89,9 @@ dependencies {
     implementation(libs.retrofit.kotlinx.serialization.converter)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
 
 }

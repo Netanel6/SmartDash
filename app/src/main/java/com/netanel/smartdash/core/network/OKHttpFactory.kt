@@ -1,6 +1,7 @@
 package com.netanel.smartdash.core.network
 import com.netanel.smartdash.core.di.HeadersInterceptor
 import okhttp3.Cache
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
@@ -8,7 +9,8 @@ import java.util.concurrent.TimeUnit
 fun newOkHttp(
     headers: HeadersInterceptor,
     enableLogging: Boolean,
-    cache: Cache? = null
+    cache: Cache? = null,
+    networkInterceptors: List<Interceptor> = emptyList()
 ): OkHttpClient {
   val logging = HttpLoggingInterceptor().apply {
     level = if (enableLogging) HttpLoggingInterceptor.Level.BODY
@@ -21,5 +23,6 @@ fun newOkHttp(
     .apply { if (cache != null) cache(cache) }
     .addInterceptor(headers)
     .addInterceptor(logging)
+    .apply { networkInterceptors.forEach { addNetworkInterceptor(it) } }
     .build()
 }
