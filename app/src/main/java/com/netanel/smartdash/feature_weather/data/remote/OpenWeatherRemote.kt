@@ -1,8 +1,5 @@
 package com.netanel.smartdash.feature_weather.data.remote
 
-import android.os.Build
-import android.util.Log
-import androidx.compose.ui.graphics.vector.addPathNodes
 import com.netanel.smartdash.BuildConfig
 import com.netanel.smartdash.core.network.ApiResult
 import com.netanel.smartdash.core.network.HttpClient
@@ -24,7 +21,8 @@ class OpenWeatherRemote @Inject constructor(
     suspend fun byCoords(
         lat: Double,
         lon: Double,
-        lang: String = "EN"
+        lang: String = "EN",
+        headers: Map<String, String> = emptyMap()
     ): ApiResult<OpenWeatherResponse> {
         val base = "https://${BuildConfig.OPEN_WEATHER_HOST}".toHttpUrl()
 
@@ -35,14 +33,14 @@ class OpenWeatherRemote @Inject constructor(
             .addQueryParameter("lang", lang)
             .build()
 
-            val req = HttpRequest(
-                method = HttpMethod.GET,
-                url = url.toString(),
-                headers = mapOf(
-                    "X-RapidAPI-Key" to BuildConfig.OPEN_WEATHER_KEY,
-                    "X-RapidAPI-Host" to BuildConfig.OPEN_WEATHER_HOST
-                )
-            )
-            return http.request(req)
-        }
+        val req = HttpRequest(
+            method = HttpMethod.GET,
+            url = url.toString(),
+            headers = mapOf(
+                "X-RapidAPI-Key" to BuildConfig.OPEN_WEATHER_KEY,
+                "X-RapidAPI-Host" to BuildConfig.OPEN_WEATHER_HOST
+            ) + headers
+        )
+        return http.request(req)
     }
+}

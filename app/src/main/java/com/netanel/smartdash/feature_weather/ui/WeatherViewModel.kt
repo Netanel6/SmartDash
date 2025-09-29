@@ -2,6 +2,7 @@ package com.netanel.smartdash.feature_weather.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.netanel.smartdash.core.cache.CachePolicy
 import com.netanel.smartdash.core.geo.LocationProvider
 import com.netanel.smartdash.core.network.ApiResult
 import com.netanel.smartdash.feature_weather.domain.model.WeatherNow
@@ -35,13 +36,18 @@ class WeatherViewModel @Inject constructor(
 
     private var lastCoords: Pair<Double, Double>? = null
     private var trackingJob: Job? = null
+    private var defaultPolicy: CachePolicy = CachePolicy.CACHE_THEN_NETWORK
+
+    fun setCachePolicy(policy: CachePolicy) {
+        defaultPolicy = policy
+    }
 
     /** One-shot fetch for provided coords. */
-    fun load(lat: Double, lon: Double) {
+    fun load(lat: Double, lon: Double, policy: CachePolicy = defaultPolicy) {
         lastCoords = lat to lon
         _state.value = UiState.Loading
         viewModelScope.launch {
-            _state.value = when (val res = getWeather(lat, lon)) {
+            _state.value = when (val res = getWeather(lat, lon, policy = policy)) {
                 is ApiResult.Success -> UiState.Success(res.value)
                 is ApiResult.HttpError -> UiState.Error("HTTP ${res.code}")
                 is ApiResult.NetworkError -> UiState.Error("Network error")
@@ -52,16 +58,19 @@ class WeatherViewModel @Inject constructor(
     }
 
     /** Refresh using last known coords (used by the Home/SmartDash screen). */
-    fun refresh() {
+    fun refresh(policy: CachePolicy = defaultPolicy) {
         val (lat, lon) = lastCoords ?: return
-        load(lat, lon)
+        load(lat, lon, policy)
     }
 
     /**
      * Start polling current location and fetch weather every [pollMs].
      * Defaults to 6 minutes (360_000 ms). Call only after permissions are granted.
      */
-    fun startLocationTracking(pollMs: Long = 360_000L) {
+    fun startLocationTracking(
+        pollMs: Long = 360_000L,
+        policy: CachePolicy = defaultPolicy
+    ) {
         if (trackingJob?.isActive == true) return
         _state.value = UiState.Loading
 
@@ -76,7 +85,7 @@ class WeatherViewModel @Inject constructor(
                     val (lat, lon) = coords
                     lastCoords = lat to lon
 
-                    when (val res = getWeather(lat, lon)) {
+                    when (val res = getWeather(lat, lon, policy = policy)) {
                         is ApiResult.Success -> _state.value = UiState.Success(res.value)
                         is ApiResult.HttpError -> _state.value = UiState.Error("HTTP ${res.code}")
                         is ApiResult.NetworkError -> _state.value = UiState.Error("Network error")

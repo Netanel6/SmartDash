@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 
 fun newOkHttp(
     headers: HeadersInterceptor,
+    cacheControl: CacheControlInterceptor,
     enableLogging: Boolean,
     cache: Cache? = null
 ): OkHttpClient {
@@ -20,6 +21,7 @@ fun newOkHttp(
     .writeTimeout(15, TimeUnit.SECONDS)
     .apply { if (cache != null) cache(cache) }
     .addInterceptor(headers)
+    .addNetworkInterceptor(cacheControl)
     .addInterceptor(logging)
     .build()
 }
