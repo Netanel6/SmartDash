@@ -8,35 +8,56 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = OceanBlue,
+    onPrimary = Color.Black,
+    primaryContainer = DeepIndigo,
+    onPrimaryContainer = Color.White,
+    secondary = AquaTeal,
+    onSecondary = Color.Black,
+    secondaryContainer = DeepIndigo,
+    onSecondaryContainer = Color.White,
+    tertiary = GoldenSun,
+    onTertiary = Color.Black,
+    background = SoftSlate,
+    onBackground = Color.White,
+    surface = SoftSlate,
+    onSurface = Color.White,
+    surfaceVariant = SlateInk,
+    onSurfaceVariant = MistBlue,
+    error = CoralError,
+    onError = Color.Black
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = OceanBlue,
     onPrimary = Color.White,
+    primaryContainer = MistBlue,
+    onPrimaryContainer = DeepIndigo,
+    secondary = AquaTeal,
     onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondaryContainer = AquaTeal.copy(alpha = 0.12f),
+    onSecondaryContainer = AquaTeal,
+    tertiary = GoldenSun,
+    onTertiary = Color.Black,
+    background = CloudGray,
+    onBackground = SlateInk,
+    surface = Color.White,
+    onSurface = SlateInk,
+    surfaceVariant = MistBlue,
+    onSurfaceVariant = DeepIndigo,
+    error = CoralError,
+    onError = Color.White
 )
 
 @Composable
 fun SmartDashTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // We keep dynamic colors opt-in so the custom palette stays consistent.
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
