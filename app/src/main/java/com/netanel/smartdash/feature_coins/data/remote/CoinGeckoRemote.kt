@@ -13,11 +13,13 @@ class CoinGeckoRemote @Inject constructor(
     suspend fun topCoins(
         vsCurrency: String = "usd",
         limit: Int = 5,
-        order: String = "market_cap_desc"
+        order: String = "market_cap_desc",
+        headers: Map<String, String> = emptyMap()
     ): ApiResult<List<CoinMarketDto>> {
         val req = HttpRequest(
             method = HttpMethod.GET,
             url = "https://api.coingecko.com/api/v3/coins/markets",
+            headers = headers,
             query = mapOf(
                 "vs_currency" to vsCurrency,
                 "order" to order,

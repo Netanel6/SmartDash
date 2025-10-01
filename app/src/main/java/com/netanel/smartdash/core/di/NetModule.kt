@@ -1,6 +1,7 @@
 package com.netanel.smartdash.core.di
 
 import android.content.Context
+import com.netanel.smartdash.core.network.CacheControlInterceptor
 import com.netanel.smartdash.core.network.DynamicApi
 import com.netanel.smartdash.core.network.DynamicClient
 import com.netanel.smartdash.core.network.JsonProvider
@@ -31,13 +32,20 @@ object NetModule {
 
     @Provides
     @Singleton
+    fun cache(@ApplicationContext ctx: Context): Cache =
+        Cache(File(ctx.cacheDir, "http_cache"), 10L * 1024L * 1024L)
+
+    @Provides
+    @Singleton
     fun okHttp(
         headers: HeadersInterceptor,
-        @ApplicationContext ctx: Context
+        cacheControlInterceptor: CacheControlInterceptor,
+        cache: Cache
     ): OkHttpClient = newOkHttp(
         headers = headers,
+        cacheControl = cacheControlInterceptor,
         enableLogging = true,
-        cache = Cache(File(ctx.cacheDir, "http_cache"), 10L * 1024L * 1024L)
+        cache = cache
     )
 
     @Provides
