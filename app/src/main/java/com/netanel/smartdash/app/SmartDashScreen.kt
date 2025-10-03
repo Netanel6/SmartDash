@@ -59,6 +59,7 @@ data class TopCoinsCell(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmartDashScreen(
+    p: PaddingValues,
     weatherVm: WeatherViewModel = hiltViewModel(),
     coinsVm: TopCoinsViewModel = hiltViewModel()
 ) {
@@ -77,23 +78,7 @@ fun SmartDashScreen(
     // Stop location updates when leaving this screen
     DisposableEffect(Unit) { onDispose { weatherVm.stopLocationTracking() } }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                title = {
-                    Text(
-                        text = "SmartDash",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            )
-        }
-    ) { p ->
+
         val cells: List<DashCell> = buildList {
             if (weatherState is WeatherViewModel.UiState.Success) {
                 val data = (weatherState as WeatherViewModel.UiState.Success).data
@@ -193,7 +178,7 @@ fun SmartDashScreen(
                     }
                 }
             }
-        }
+
     }
 }
 
