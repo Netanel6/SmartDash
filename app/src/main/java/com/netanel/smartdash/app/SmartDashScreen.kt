@@ -3,17 +3,21 @@ package com.netanel.smartdash.app
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +59,7 @@ data class TopCoinsCell(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmartDashScreen(
+    p: PaddingValues,
     weatherVm: WeatherViewModel = hiltViewModel(),
     coinsVm: TopCoinsViewModel = hiltViewModel()
 ) {
@@ -73,9 +78,7 @@ fun SmartDashScreen(
     // Stop location updates when leaving this screen
     DisposableEffect(Unit) { onDispose { weatherVm.stopLocationTracking() } }
 
-    Scaffold(
-        topBar = { SmallTopAppBar(title = { Text("SmartDash") }) }
-    ) { p ->
+
         val cells: List<DashCell> = buildList {
             if (weatherState is WeatherViewModel.UiState.Success) {
                 val data = (weatherState as WeatherViewModel.UiState.Success).data
@@ -109,9 +112,10 @@ fun SmartDashScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(p),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Loading/Idle placeholders
             if (showInitialLoading) {
@@ -155,16 +159,26 @@ fun SmartDashScreen(
             // Example footer actions
             if (weatherState is WeatherViewModel.UiState.Success) {
                 item("actions_refresh_weather") {
-                    OutlinedButton(onClick = { weatherVm.refresh() }) { Text("Refresh weather") }
+                    FilledTonalButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { weatherVm.refresh() }
+                    ) {
+                        Text("Refresh weather")
+                    }
                 }
             }
 
             if (coinsState is TopCoinsViewModel.UiState.Success) {
                 item("actions_refresh_coins") {
-                    OutlinedButton(onClick = { coinsVm.refresh() }) { Text("Refresh coins") }
+                    FilledTonalButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { coinsVm.refresh() }
+                    ) {
+                        Text("Refresh coins")
+                    }
                 }
             }
-        }
+
     }
 }
 
