@@ -1,5 +1,6 @@
 package com.netanel.smartdash.feature_coins.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +42,6 @@ fun TopCoinsCard(
 
     Card(
         modifier = modifier,
-        onClick = onClick,
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -171,12 +171,18 @@ fun TopCoinsCard(
                     }
                 }
             }
-
-            Text(
-                text = "Tap to refresh prices",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Surface(
+                modifier = Modifier.clickable(onClick = onClick),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).clickable(onClick = onClick),
+                    text = "Tap to refresh prices",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

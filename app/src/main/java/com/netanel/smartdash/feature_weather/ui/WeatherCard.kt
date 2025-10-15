@@ -1,6 +1,7 @@
 package com.netanel.smartdash.feature_weather.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +36,6 @@ fun WeatherCard(
     )
     Card(
         modifier = modifier,
-        onClick = onClick,
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -82,6 +82,7 @@ fun WeatherCard(
                 }
 
                 Surface(
+                    modifier = Modifier.clickable(onClick = onClick),
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f),
                     shape = MaterialTheme.shapes.medium
                 ) {
